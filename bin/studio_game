@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/studio_game/game'
+require_relative '../lib/studio_game/player_clumsy'
+require_relative '../lib/studio_game/player_berserk'
+require_relative '../lib/studio_game/player'
+
+game = StudioGame::Game.new('knuckleheads')
+
+default_player_file = File.join(File.dirname(__FILE__), 'players.csv')
+game.load_players(ARGV.shift || default_player_file)
+
+puts "Welcome to #{game.title}!".center(50, '-')
+puts "#{game.players.size} players are loaded\n"
+game.highscores
+
+loop do
+  puts 'How many rounds to play?'
+  rounds = gets.chomp
+  case rounds
+  when /^\d+$/
+    game.play(rounds.to_i)
+  when 'quit' || 'exit'
+    game.standings
+    game.save_highscores
+    break
+  when 'score' || 'total'
+    game.standings
+  else
+    puts "Please enter a number,'quit', or 'score'"
+  end
+end
